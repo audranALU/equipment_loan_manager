@@ -5,6 +5,7 @@ namespace EquipmentLoanManager.Tests;
 
 public class InventoryTests
 {
+    /// <summary>Checks only the entered quantities are created.</summary>
     [Fact]
     public void Constructor_CreatesOnlyTheEnteredQuantities()
     {
@@ -15,6 +16,7 @@ public class InventoryTests
         Assert.Equal(3, manager.Inventory.ConfiguredCount(EquipmentCategory.VrHeadset));
     }
 
+    /// <summary>Checks every item gets a unique ID.</summary>
     [Fact]
     public void Constructor_GivesEveryItemAUniqueId()
     {
@@ -26,6 +28,7 @@ public class InventoryTests
         Assert.Equal(ids.Count, ids.Distinct().Count());
     }
 
+    /// <summary>Checks each item has the right type.</summary>
     [Fact]
     public void Constructor_CreatesTheMatchingItemType()
     {
@@ -35,6 +38,7 @@ public class InventoryTests
         Assert.Contains(manager.Inventory.Items, i => i is Tripod);
     }
 
+    /// <summary>Checks quantities above the limit are rejected.</summary>
     [Fact]
     public void Constructor_RejectsQuantityAboveCapacity()
     {
@@ -43,6 +47,7 @@ public class InventoryTests
         Assert.Throws<ArgumentOutOfRangeException>(() => new Inventory(quantities));
     }
 
+    /// <summary>Checks the summary totals are correct.</summary>
     [Fact]
     public void Summarise_ReportsConfiguredAvailableAndBorrowed()
     {

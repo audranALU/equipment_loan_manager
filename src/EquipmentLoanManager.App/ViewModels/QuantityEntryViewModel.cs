@@ -31,6 +31,7 @@ public sealed class QuantityEntryViewModel(EquipmentCategory category) : Observa
         private set => SetProperty(ref _error, value);
     }
 
+    /// <summary>Validates the input and shows an error if it is invalid.</summary>
     public bool TryGetQuantity(out int quantity)
     {
         var result = QuantityValidator.Validate(Category, Input);

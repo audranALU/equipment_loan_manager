@@ -5,6 +5,7 @@ namespace EquipmentLoanManager.Tests;
 
 public class ConfigurationTests
 {
+    /// <summary>Checks each category has the correct limit.</summary>
     [Theory]
     [InlineData(EquipmentCategory.Camera360, 5)]
     [InlineData(EquipmentCategory.Laptop, 8)]
@@ -16,6 +17,7 @@ public class ConfigurationTests
         Assert.Equal(expected, EquipmentCatalog.MaxCapacity(category));
     }
 
+    /// <summary>Checks valid quantities are accepted.</summary>
     [Theory]
     [InlineData("0", 0)]
     [InlineData("3", 3)]
@@ -28,6 +30,7 @@ public class ConfigurationTests
         Assert.Equal(expected, result.Value);
     }
 
+    /// <summary>Checks invalid quantities are rejected.</summary>
     [Theory]
     [InlineData("9")]
     [InlineData("-1")]

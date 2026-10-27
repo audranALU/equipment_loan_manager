@@ -8,7 +8,9 @@ public abstract class SectionViewModel(LoanManager manager, Action<OperationResu
 {
     protected LoanManager Manager { get; } = manager;
 
+    /// <summary>Reloads the tab data.</summary>
     public abstract void Refresh();
 
+    /// <summary>Sends a result to the status banner.</summary>
     protected void Report(OperationResult result) => report(result);
 }

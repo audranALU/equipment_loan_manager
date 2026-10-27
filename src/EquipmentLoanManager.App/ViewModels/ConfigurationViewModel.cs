@@ -9,6 +9,7 @@ public sealed class ConfigurationViewModel : ObservableObject
 {
     private string _summary = string.Empty;
 
+    /// <summary>Creates an entry for each category.</summary>
     public ConfigurationViewModel()
     {
         Entries = EquipmentCatalog.All.Select(c => new QuantityEntryViewModel(c)).ToList();
@@ -27,6 +28,7 @@ public sealed class ConfigurationViewModel : ObservableObject
 
     public ICommand StartCommand { get; }
 
+    /// <summary>Validates all entries and starts the session if they are valid.</summary>
     private void Start()
     {
         var quantities = new Dictionary<EquipmentCategory, int>();

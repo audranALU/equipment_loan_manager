@@ -14,6 +14,7 @@ public sealed class MainViewModel : ObservableObject
     private int _activeLoanCount;
     private int _borrowerCount;
 
+    /// <summary>Creates the main window view model and its tabs.</summary>
     public MainViewModel(LoanManager manager)
     {
         _manager = manager;
@@ -66,6 +67,7 @@ public sealed class MainViewModel : ObservableObject
         private set => SetProperty(ref _isError, value);
     }
 
+    /// <summary>Shows a result in the banner and refreshes all tabs.</summary>
     private void Show(OperationResult result)
     {
         StatusMessage = result.Message;

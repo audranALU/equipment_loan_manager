@@ -4,6 +4,7 @@ namespace EquipmentLoanManager.Core.Models;
 
 public abstract class EquipmentItem
 {
+    /// <summary>Creates an item with the given ID.</summary>
     protected EquipmentItem(string id)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
@@ -24,6 +25,7 @@ public abstract class EquipmentItem
 
     public string BorrowerName => CurrentLoan?.Borrower.Name ?? string.Empty;
 
+    /// <summary>Marks the item as on loan for the given loan.</summary>
     internal void AssignTo(Loan loan)
     {
         if (!IsAvailable)
@@ -32,5 +34,6 @@ public abstract class EquipmentItem
         CurrentLoan = loan;
     }
 
+    /// <summary>Marks the item as available again.</summary>
     internal void Release() => CurrentLoan = null;
 }

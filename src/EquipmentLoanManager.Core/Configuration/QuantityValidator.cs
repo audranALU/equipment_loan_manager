@@ -6,6 +6,7 @@ namespace EquipmentLoanManager.Core.Configuration;
 
 public static class QuantityValidator
 {
+    /// <summary>Checks that the entered quantity is a whole number within the category limit.</summary>
     public static OperationResult<int> Validate(EquipmentCategory category, string? input)
     {
         var label = EquipmentCatalog.Label(category);

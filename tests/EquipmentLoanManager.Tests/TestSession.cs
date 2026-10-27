@@ -5,6 +5,7 @@ namespace EquipmentLoanManager.Tests;
 
 internal static class TestSession
 {
+    /// <summary>Creates a test session with the given stock.</summary>
     public static LoanManager Create(
         int cameras = 0,
         int laptops = 0,
@@ -20,6 +21,7 @@ internal static class TestSession
             [EquipmentCategory.Tripod] = tripods
         });
 
+    /// <summary>Adds a borrower and returns it.</summary>
     public static Borrower Register(this LoanManager manager, string name) =>
         manager.AddBorrower(name).Value!;
 }
