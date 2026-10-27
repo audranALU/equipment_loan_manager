@@ -1,0 +1,49 @@
+<UserControl x:Class="EquipmentLoanManager.App.Views.BorrowersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock Text="Add a borrower" Style="{StaticResource SectionHeading}" />
+
+                <TextBlock Text="Name" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14" />
+
+                <TextBlock Text="Borrower ID (optional)" Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding NewId, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Leave blank to generate one automatically." FontSize="12"
+                           Style="{StaticResource Muted}" Margin="0,6,0,18" />
+
+                <Button Content="Add borrower" Command="{Binding AddCommand}" Style="{StaticResource PrimaryButton}" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="2" Style="{StaticResource Card}">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                    <Button DockPanel.Dock="Right" Content="Remove selected"
+                            Command="{Binding RemoveCommand}" Style="{StaticResource SecondaryButton}" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Sample borrowers" Style="{StaticResource SectionHeading}" Margin="0" />
+                        <TextBlock Text="Borrowers with active loans cannot be removed." FontSize="12"
+                                   Style="{StaticResource Muted}" />
+                    </StackPanel>
+                </DockPanel>
+                <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Borrower.Id}" Width="Auto" />
+                        <DataGridTextColumn Header="NAME" Binding="{Binding Borrower.Name}" Width="*" />
+                        <DataGridTextColumn Header="ACTIVE LOANS" Binding="{Binding ActiveLoans}" Width="Auto" />
+                        <DataGridTextColumn Header="WAITING FOR" Binding="{Binding WaitingFor}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

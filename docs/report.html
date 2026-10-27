@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Equipment Loan Manager – Design and Implementation Report</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #1a1a1a; background: #fff; }
+  h1 { font-size: 20pt; margin: 0 0 4pt; }
+  .subtitle { color: #555; margin: 0 0 18pt; }
+  h2 { font-size: 14pt; margin: 20pt 0 6pt; border-bottom: 1px solid #ccc; padding-bottom: 3pt; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 4pt; }
+  p { margin: 0 0 8pt; }
+  ol, ul { margin: 0 0 8pt; padding-left: 20pt; }
+  li { margin-bottom: 3pt; }
+  code { font-family: Consolas, monospace; font-size: 9.5pt; background: #f2f2f2; padding: 0 2pt; }
+  pre { font-family: Consolas, monospace; font-size: 8.5pt; background: #f5f5f5; border-left: 3px solid #999; padding: 6pt 8pt; margin: 4pt 0 10pt; white-space: pre-wrap; break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 4pt 0 10pt; font-size: 10pt; }
+  th, td { border: 1px solid #bbb; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  figure { margin: 6pt 0 12pt; break-inside: avoid; }
+  figcaption { font-size: 9.5pt; color: #555; text-align: center; margin-top: 4pt; }
+  .fill { background: #fff3a8; }
+  .page-break { break-before: page; }
+</style>
+</head>
+<body>
+
+<h1>Equipment Loan Manager</h1>
+<p class="subtitle">Design and Implementation Report</p>
+
+<h2>1. Overview</h2>
+
+<p>Equipment Loan Manager is a Windows desktop app built in C# with WPF. It simulates how a campus lends out equipment such as laptops, 360 cameras, VR headsets, microphones and tripods. Nothing is saved to a database. All data lives in memory for one session, so a tester can try the borrowing rules freely and start again from a clean state by reopening the app.</p>
+
+<p>A tester uses the app like this:</p>
+<ol>
+  <li><strong>Set up stock.</strong> On startup a setup window asks how many items of each category exist. Each category has a maximum (for example 8 laptops, 12 tripods). Only whole numbers from 0 up to that maximum are accepted, and bad entries are highlighted. The app then creates every item with its own ID, such as <code>LAP-01</code>.</li>
+  <li><strong>Add borrowers.</strong> On the Borrowers tab the tester types a name and, if they want, an ID. If the ID is left blank the app makes one, such as <code>BR-001</code>.</li>
+  <li><strong>Borrow and return.</strong> On the Loans tab the tester picks a borrower and a category and clicks Borrow. The app finds a free item and creates a loan. Selecting an active loan and clicking Return gives the item back. Returned loans stay in a history list.</li>
+  <li><strong>Use waiting lists.</strong> When every item in a category is out, the borrower can join that category's queue. When an item comes back, the tester issues it to the person at the front of the queue.</li>
+  <li><strong>Check the inventory.</strong> The Inventory tab shows how many items are configured, available and borrowed, and who holds each one.</li>
+</ol>
+
+<p>After every action a banner at the top shows the result: green when it worked and red with a clear reason when it was refused (for example, "Amara already has 2 active loans"). The main rules are: a borrower can hold at most two items and only one per category, an item can never be lent twice at once, a loan cannot be returned twice, and nobody can skip a waiting list.</p>
+
+<p>The solution has three projects. <strong>Core</strong> holds all the rules and has no UI code. <strong>App</strong> is the WPF front end, built with the Model-View-ViewModel (MVVM) pattern. <strong>Tests</strong> holds xUnit tests that run against Core. The UI only talks to one class, <code>LoanManager</code>, which acts as a single entry point (a facade) to the rest of Core.</p>
+
+<h2 class="page-break">2. UML Class Diagram</h2>
+
+<figure>
+<svg viewBox="0 0 1000 770" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="11">
+  <defs>
+    <marker id="open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="#222" stroke-width="1.3"/>
+    </marker>
+    <marker id="tri" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#fff" stroke="#222" stroke-width="1.2"/>
+    </marker>
+    <marker id="filled" viewBox="0 0 16 10" refX="16" refY="5" markerWidth="14" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,5 L8,0 L16,5 L8,10 Z" fill="#222" stroke="#222"/>
+    </marker>
+    <marker id="hollow" viewBox="0 0 16 10" refX="16" refY="5" markerWidth="14" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,5 L8,0 L16,5 L8,10 Z" fill="#fff" stroke="#222" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <g stroke="#222" fill="#fff" stroke-width="1.2">
+    <rect x="380" y="10" width="240" height="180"/>
+    <rect x="10" y="250" width="180" height="46"/><rect x="210" y="250" width="180" height="46"/>
+    <rect x="410" y="250" width="180" height="46"/><rect x="610" y="250" width="180" height="46"/>
+    <rect x="810" y="250" width="180" height="46"/>
+    <rect x="10" y="340" width="180" height="76"/><rect x="210" y="340" width="180" height="76"/>
+    <rect x="410" y="340" width="180" height="76"/><rect x="610" y="340" width="180" height="76"/>
+    <rect x="810" y="340" width="180" height="76"/>
+    <rect x="10" y="520" width="160" height="140"/>
+    <rect x="250" y="520" width="150" height="110"/>
+    <rect x="610" y="520" width="180" height="80"/>
+    <rect x="10" y="710" width="96" height="30"/><rect x="112" y="710" width="96" height="30"/>
+    <rect x="214" y="710" width="96" height="30"/><rect x="316" y="710" width="96" height="30"/>
+    <rect x="418" y="710" width="96" height="30"/>
+  </g>
+  <g stroke="#222" stroke-width="1.2" fill="none">
+    <line x1="380" y1="54" x2="620" y2="54"/><line x1="380" y1="112" x2="620" y2="112"/>
+    <line x1="10" y1="362" x2="190" y2="362"/><line x1="210" y1="362" x2="390" y2="362"/>
+    <line x1="410" y1="362" x2="590" y2="362"/><line x1="610" y1="362" x2="790" y2="362"/>
+    <line x1="810" y1="362" x2="990" y2="362"/>
+    <line x1="10" y1="556" x2="170" y2="556"/><line x1="250" y1="542" x2="400" y2="542"/>
+    <line x1="610" y1="542" x2="790" y2="542"/>
+  </g>
+
+  <g text-anchor="middle">
+    <text x="500" y="30" font-weight="bold" font-size="13">LoanManager</text>
+    <text x="500" y="46" font-size="10" fill="#555">(facade used by the UI)</text>
+    <text x="100" y="268" font-size="10" fill="#555">«interface»</text><text x="100" y="286" font-weight="bold">IInventory</text>
+    <text x="300" y="268" font-size="10" fill="#555">«interface»</text><text x="300" y="286" font-weight="bold">ILoanLedger</text>
+    <text x="500" y="268" font-size="10" fill="#555">«interface»</text><text x="500" y="286" font-weight="bold">IBorrowingPolicy</text>
+    <text x="700" y="268" font-size="10" fill="#555">«interface»</text><text x="700" y="286" font-weight="bold">IBorrowerRegistry</text>
+    <text x="900" y="268" font-size="10" fill="#555">«interface»</text><text x="900" y="286" font-weight="bold">IWaitingListRegistry</text>
+    <text x="100" y="356" font-weight="bold">Inventory</text>
+    <text x="300" y="356" font-weight="bold">LoanLedger</text>
+    <text x="500" y="356" font-weight="bold">BorrowingPolicy</text>
+    <text x="700" y="356" font-weight="bold">BorrowerRegistry</text>
+    <text x="900" y="356" font-weight="bold">WaitingListRegistry</text>
+    <text x="90" y="534" font-size="10" fill="#555">«abstract»</text><text x="90" y="550" font-weight="bold">EquipmentItem</text>
+    <text x="325" y="536" font-weight="bold">Loan</text>
+    <text x="700" y="536" font-weight="bold">Borrower</text>
+    <text x="58" y="730">Camera360</text><text x="160" y="730">Laptop</text>
+    <text x="262" y="730">VrHeadset</text><text x="364" y="730">Microphone</text>
+    <text x="466" y="730">Tripod</text>
+  </g>
+
+  <g font-size="10.5">
+    <text x="388" y="70">- policy: IBorrowingPolicy</text>
+    <text x="388" y="84">+ Inventory, Borrowers,</text>
+    <text x="388" y="98">  Loans, WaitingLists</text>
+    <text x="388" y="128">+ Create(quantities)</text>
+    <text x="388" y="142">+ Borrow(id, category)</text>
+    <text x="388" y="156">+ Return(loanId)</text>
+    <text x="388" y="170">+ JoinWaitingList(id, category)</text>
+    <text x="388" y="184">+ IssueToNextWaiting(category)</text>
+
+    <text x="16" y="378">- items: List&lt;EquipmentItem&gt;</text>
+    <text x="16" y="394">+ FindAvailable(category)</text>
+    <text x="216" y="378">- loans: List&lt;Loan&gt;</text>
+    <text x="216" y="394">+ Record(loan)</text>
+    <text x="216" y="410">+ ActiveFor(borrowerId)</text>
+    <text x="416" y="378">+ MaxActiveLoans = 2</text>
+    <text x="416" y="394">+ CheckEligibility(id,</text>
+    <text x="416" y="408">    category)</text>
+    <text x="616" y="378">- borrowers: List&lt;Borrower&gt;</text>
+    <text x="616" y="394">+ Add(name, id)</text>
+    <text x="616" y="410">+ Find(id) / Remove(id)</text>
+    <text x="816" y="378">- one Queue&lt;Borrower&gt;</text>
+    <text x="816" y="392">  per category</text>
+    <text x="816" y="408">+ Enqueue / Peek / Dequeue</text>
+
+    <text x="16" y="572">+ Id</text>
+    <text x="16" y="586">+ Category {abstract}</text>
+    <text x="16" y="600">+ CurrentLoan: Loan?</text>
+    <text x="16" y="614">+ IsAvailable</text>
+    <text x="16" y="630">~ AssignTo(loan)</text>
+    <text x="16" y="644">~ Release()</text>
+    <text x="256" y="558">+ Id</text>
+    <text x="256" y="572">+ Borrower</text>
+    <text x="256" y="586">+ Item</text>
+    <text x="256" y="600">+ Status: LoanStatus</text>
+    <text x="256" y="618">~ Complete()</text>
+    <text x="616" y="558">+ Id</text>
+    <text x="616" y="572">+ Name</text>
+    <text x="616" y="588">+ DisplayName</text>
+  </g>
+
+  <g stroke="#222" stroke-width="1.2" fill="none">
+    <line x1="500" y1="190" x2="100" y2="250" marker-end="url(#open)"/>
+    <line x1="500" y1="190" x2="300" y2="250" marker-end="url(#open)"/>
+    <line x1="500" y1="190" x2="500" y2="250" marker-end="url(#open)"/>
+    <line x1="500" y1="190" x2="700" y2="250" marker-end="url(#open)"/>
+    <line x1="500" y1="190" x2="900" y2="250" marker-end="url(#open)"/>
+
+    <g stroke-dasharray="5,4">
+      <line x1="100" y1="340" x2="100" y2="296" marker-end="url(#tri)"/>
+      <line x1="300" y1="340" x2="300" y2="296" marker-end="url(#tri)"/>
+      <line x1="500" y1="340" x2="500" y2="296" marker-end="url(#tri)"/>
+      <line x1="700" y1="340" x2="700" y2="296" marker-end="url(#tri)"/>
+      <line x1="900" y1="340" x2="900" y2="296" marker-end="url(#tri)"/>
+    </g>
+
+    <line x1="90" y1="416" x2="90" y2="520" marker-start="url(#filled)"/>
+    <line x1="300" y1="416" x2="300" y2="520" marker-start="url(#hollow)"/>
+    <line x1="700" y1="416" x2="700" y2="520" marker-start="url(#hollow)"/>
+    <polyline points="900,416 900,570 790,570" marker-start="url(#hollow)"/>
+
+    <line x1="400" y1="560" x2="610" y2="560" marker-end="url(#open)"/>
+    <line x1="250" y1="590" x2="170" y2="590"/>
+
+    <polyline points="58,710 58,690 466,690 466,710"/>
+    <line x1="160" y1="690" x2="160" y2="710"/><line x1="262" y1="690" x2="262" y2="710"/>
+    <line x1="364" y1="690" x2="364" y2="710"/>
+    <line x1="90" y1="690" x2="90" y2="660" marker-end="url(#tri)"/>
+  </g>
+
+  <g font-size="10" fill="#333">
+    <text x="96" y="440">1</text><text x="96" y="514">0..*</text>
+    <text x="14" y="478" font-style="italic">creates &amp; owns</text>
+    <text x="306" y="440">1</text><text x="306" y="514">0..*</text>
+    <text x="706" y="440">1</text><text x="706" y="514">0..*</text>
+    <text x="906" y="440">0..*</text><text x="796" y="566">0..*</text>
+    <text x="470" y="554">borrower</text><text x="408" y="574">0..*</text><text x="596" y="574">1</text>
+    <text x="178" y="584">item 1</text>
+    <text x="178" y="604">0..1</text>
+    <text x="176" y="618" font-size="9">currentLoan</text>
+  </g>
+
+  <g font-size="10.5">
+    <rect x="600" y="640" width="390" height="120" fill="#fafafa" stroke="#bbb"/>
+    <text x="612" y="658" font-weight="bold">Key</text>
+    <g stroke="#222" stroke-width="1.2" fill="none">
+      <line x1="612" y1="676" x2="662" y2="676" marker-end="url(#tri)"/>
+      <line x1="612" y1="694" x2="662" y2="694" stroke-dasharray="5,4" marker-end="url(#tri)"/>
+      <line x1="612" y1="712" x2="662" y2="712" marker-end="url(#open)"/>
+      <line x1="662" y1="730" x2="612" y2="730" marker-start="url(#filled)"/>
+      <line x1="662" y1="748" x2="612" y2="748" marker-start="url(#hollow)"/>
+    </g>
+    <text x="672" y="680">Inheritance (subclass → base class)</text>
+    <text x="672" y="698">Implements an interface</text>
+    <text x="672" y="716">Association (knows about / uses)</text>
+    <text x="672" y="734">Composition (owner controls lifetime)</text>
+    <text x="672" y="752">Aggregation (holds, but does not own)</text>
+  </g>
+</svg>
+<figcaption>Figure 1. Main classes and interfaces in the Core project. Only key members are shown.</figcaption>
+</figure>
+
+<p>The diagram shows the Core project only, since that is where the design decisions are. <code>LoanManager</code> depends on five interfaces rather than on concrete classes, and each interface has one implementation. <code>BorrowingPolicy</code> also reads from <code>IBorrowerRegistry</code> and <code>ILoanLedger</code> to check the rules; that link is left out to keep the picture readable. On the App side, each tab has a view model (for example <code>LoansViewModel</code>) that inherits from <code>SectionViewModel</code> and calls <code>LoanManager</code>.</p>
+
+<h2>3. Relationship Explanations</h2>
+
+<h3>Inheritance: EquipmentItem and its subclasses</h3>
+<p><code>EquipmentItem</code> is an abstract class. <code>Laptop</code>, <code>Camera360</code>, <code>VrHeadset</code>, <code>Microphone</code> and <code>Tripod</code> inherit from it. Every item, whatever its type, needs the same things: an ID, a current loan, an "is it available" check, and safe ways to lend and release it. Putting this in the base class means the lending logic is written once. Each subclass only says which category it belongs to.</p>
+
+<pre>public abstract class EquipmentItem
+{
+    public abstract EquipmentCategory Category { get; }
+    public bool IsAvailable =&gt; CurrentLoan is null;
+    internal void AssignTo(Loan loan) { ... }
+}
+
+public sealed class Laptop(string id) : EquipmentItem(id)
+{
+    public override EquipmentCategory Category =&gt; EquipmentCategory.Laptop;
+}</pre>
+
+<p>This is a true "is-a" relationship: a laptop is a piece of equipment. The rest of the code, such as <code>Inventory</code> and <code>Loan</code>, works with <code>EquipmentItem</code> and never needs to know the exact type. Adding a new kind of equipment means adding one small subclass and one line in the factory and catalog.</p>
+
+<h3>Association: Loan and Borrower</h3>
+<p>A <code>Loan</code> holds a reference to one <code>Borrower</code> and one <code>EquipmentItem</code>. A borrower can appear in many loans over time. This is an association, not ownership. The loan just records who borrowed what. It did not create the borrower and does not control when the borrower exists.</p>
+<p>This matters when a borrower is removed. <code>BorrowerRegistry</code> drops them from its list, but their completed loans still point to the same <code>Borrower</code> object, so the loan history stays readable. Because the reference is kept, the borrower object stays alive as long as some loan still needs it. A test (<code>RemoveBorrower_PreservesCompletedLoanHistory</code>) checks this.</p>
+
+<h3>Composition: Inventory and EquipmentItem</h3>
+<p><code>Inventory</code> creates every <code>EquipmentItem</code> itself, in its constructor, using the quantities from the setup screen. No other class can create or delete items. The list is private and only exposed as read-only. The items are made when the inventory is made and are never used outside it. So the inventory owns its items, and they share its lifetime. That is composition.</p>
+<p>The whole object graph has a clear lifetime. <code>LoanManager.Create</code> builds the inventory, registries and ledger when the tester clicks Start on the setup screen. They all live until the main window closes, and then everything is released together. Nothing is shared between sessions.</p>
+<p>By contrast, <code>WaitingListRegistry</code> and <code>Borrower</code> is an aggregation. The queues hold references to borrowers, but they did not create them. Removing someone from a queue does not delete the borrower; it only cancels their request.</p>
+
+<h2>4. Testing</h2>
+
+<p>The Tests project has <strong>50 automated xUnit tests</strong>, and all of them pass. They test Core directly through <code>LoanManager</code>, without opening any windows, so they run in well under a second. A small helper, <code>TestSession</code>, sets up a session in one line, for example <code>TestSession.Create(laptops: 1)</code>.</p>
+
+<table>
+  <tr><th>Test file</th><th>What it covers</th></tr>
+  <tr><td>ConfigurationTests</td><td>Category limits; quantity input rules (blank, negative, decimals, text, too large)</td></tr>
+  <tr><td>InventoryTests</td><td>Correct number and type of items, unique IDs, summary counts</td></tr>
+  <tr><td>BorrowerTests</td><td>Generated IDs, empty names, duplicate IDs, removing borrowers safely</td></tr>
+  <tr><td>LoanTests</td><td>Borrowing, the two-item and one-per-category limits, returns and double returns</td></tr>
+  <tr><td>WaitingListTests</td><td>Joining, cancelling, first-in-first-out order, no queue skipping, rechecking eligibility</td></tr>
+</table>
+
+<h3>TDD cycle 1: limit of two active loans</h3>
+<p><strong>Red.</strong> We wrote <code>Borrow_RejectsThirdActiveLoan</code> first. It gives one borrower a laptop and a headset, then asks for a tripod and expects a refusal. It failed, because <code>Borrow</code> handed out any free item.</p>
+<pre>manager.Borrow(borrower.Id, EquipmentCategory.Laptop);
+manager.Borrow(borrower.Id, EquipmentCategory.VrHeadset);
+var result = manager.Borrow(borrower.Id, EquipmentCategory.Tripod);
+Assert.False(result.Succeeded);</pre>
+<p><strong>Green.</strong> We added a check that counts the borrower's active loans and refuses at two. The test passed.</p>
+<p><strong>Refactor.</strong> Joining a waiting list needed the same rule, so we moved it out of <code>LoanManager</code> into <code>BorrowingPolicy</code> behind <code>IBorrowingPolicy</code>. All the tests still passed. The next test, <code>Borrow_RejectsSecondItemFromSameCategory</code>, then only needed one extra line in the policy.</p>
+
+<h3>TDD cycle 2: nobody can skip the queue</h3>
+<p><strong>Red.</strong> We wrote <code>Borrow_CannotBypassExistingQueue</code>. One person waits for a laptop, the laptop is returned, and then a different person tries to borrow it directly. The test expects a refusal. It failed, because <code>Borrow</code> saw a free laptop and lent it to the latecomer.</p>
+<p><strong>Green.</strong> We made <code>Borrow</code> refuse when anyone is already waiting for that category, with a message telling the tester to join the list instead.</p>
+<pre>var waiting = WaitingLists.GetQueue(category).Count;
+if (waiting &gt; 0)
+    return OperationResult&lt;Loan&gt;.Failure(...);</pre>
+<p><strong>Refactor.</strong> This showed that the person at the front of the queue could have become ineligible while waiting. We added <code>IssueToNext_RechecksEligibilityBeforeIssuing</code> and made <code>IssueToNextWaiting</code> reuse the same policy check before lending.</p>
+
+<h2>5. Reflection</h2>
+
+<h3>Team contributions</h3>
+<table>
+  <tr><th>Member</th><th>Contribution</th></tr>
+  <tr><td class="fill">[Name 1]</td><td class="fill">[e.g. Core models, Inventory and configuration rules]</td></tr>
+  <tr><td class="fill">[Name 2]</td><td class="fill">[e.g. LoanManager, BorrowingPolicy and waiting lists]</td></tr>
+  <tr><td class="fill">[Name 3]</td><td class="fill">[e.g. WPF views, view models and styling]</td></tr>
+  <tr><td class="fill">[Name 4]</td><td class="fill">[e.g. Unit tests, TDD cycles and this report]</td></tr>
+</table>
+
+<h3>Design challenge</h3>
+<p>The hardest part was keeping the screens in step with each other. One action, such as a return, changes the inventory counts, the loan lists, the waiting lists and the header totals all at once. Our first idea was for each tab to update itself, but that got messy fast and tabs often showed old data. We solved it by sending every result through a single method, <code>MainViewModel.Show</code>. It shows the message, then tells every tab to refresh from <code>LoanManager</code>. This gives one simple path, and the screen always matches the real state.</p>
+
+<h3>Potential improvement</h3>
+<p>The biggest gap is that nothing is saved. When the app closes, every borrower and loan is lost. Because Core already works through interfaces such as <code>ILoanLedger</code> and <code>IBorrowerRegistry</code>, we could add versions that save to a file or a small SQLite database without changing <code>LoanManager</code> or the UI. Due dates and overdue warnings would be a natural next step after that.</p>
+
+</body>
+</html>

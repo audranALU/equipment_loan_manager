@@ -2,6 +2,7 @@ using System.Windows.Input;
 
 namespace EquipmentLoanManager.App.Infrastructure;
 
+/// <summary>A command that runs the given action.</summary>
 public sealed class RelayCommand(Action execute, Func<bool>? canExecute = null) : ICommand
 {
     public event EventHandler? CanExecuteChanged

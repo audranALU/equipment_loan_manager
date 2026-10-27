@@ -4,6 +4,7 @@ using EquipmentLoanManager.Core.Services;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>View model for the inventory tab.</summary>
 public sealed class InventoryViewModel(LoanManager manager, Action<OperationResult> report)
     : SectionViewModel(manager, report)
 {

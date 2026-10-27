@@ -4,6 +4,7 @@ namespace EquipmentLoanManager.Tests;
 
 public class LoanTests
 {
+    /// <summary>Checks borrowing assigns an item and updates availability.</summary>
     [Fact]
     public void Borrow_AssignsAvailableItemAndUpdatesAvailability()
     {
@@ -18,6 +19,7 @@ public class LoanTests
         Assert.Equal(1, manager.Inventory.AvailableCount(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks every loan gets a unique ID.</summary>
     [Fact]
     public void Borrow_GivesEachLoanAUniqueId()
     {
@@ -29,6 +31,7 @@ public class LoanTests
         Assert.NotEqual(first.Item.Id, second.Item.Id);
     }
 
+    /// <summary>Checks a third active loan is refused.</summary>
     [Fact]
     public void Borrow_RejectsThirdActiveLoan()
     {
@@ -43,6 +46,7 @@ public class LoanTests
         Assert.Equal(2, manager.Loans.ActiveFor(borrower.Id).Count);
     }
 
+    /// <summary>Checks a second item from the same category is refused.</summary>
     [Fact]
     public void Borrow_RejectsSecondItemFromSameCategory()
     {
@@ -56,6 +60,7 @@ public class LoanTests
         Assert.Equal(1, manager.Inventory.AvailableCount(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks an unknown borrower cannot borrow.</summary>
     [Fact]
     public void Borrow_RejectsUnknownBorrower()
     {
@@ -67,6 +72,7 @@ public class LoanTests
         Assert.Empty(manager.Loans.Active);
     }
 
+    /// <summary>Checks borrowing fails when no item is available.</summary>
     [Fact]
     public void Borrow_RejectsWhenAllItemsAreOnLoan()
     {
@@ -79,6 +85,7 @@ public class LoanTests
         Assert.Single(manager.Loans.Active);
     }
 
+    /// <summary>Checks returning completes the loan and frees the item.</summary>
     [Fact]
     public void Return_CompletesLoanAndFreesItem()
     {
@@ -94,6 +101,7 @@ public class LoanTests
         Assert.Empty(manager.Loans.Active);
     }
 
+    /// <summary>Checks a loan cannot be returned twice.</summary>
     [Fact]
     public void Return_RejectsDuplicateReturn()
     {
@@ -107,6 +115,7 @@ public class LoanTests
         Assert.Single(manager.Loans.Completed);
     }
 
+    /// <summary>Checks an unknown loan cannot be returned.</summary>
     [Fact]
     public void Return_RejectsUnknownLoan()
     {
@@ -117,6 +126,7 @@ public class LoanTests
         Assert.False(result.Succeeded);
     }
 
+    /// <summary>Checks a borrower leaves the active list after returning everything.</summary>
     [Fact]
     public void ActiveBorrowers_DropsBorrowerOnceAllLoansAreReturned()
     {
