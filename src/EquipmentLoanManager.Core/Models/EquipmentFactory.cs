@@ -1,5 +1,6 @@
 namespace EquipmentLoanManager.Core.Models;
 
+/// <summary>Creates equipment items by category.</summary>
 public static class EquipmentFactory
 {
     /// <summary>Creates an item of the given category.</summary>

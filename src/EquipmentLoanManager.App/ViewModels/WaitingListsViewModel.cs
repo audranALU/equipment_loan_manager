@@ -7,6 +7,7 @@ using EquipmentLoanManager.Core.Services;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>View model for the waiting lists tab.</summary>
 public sealed class WaitingListsViewModel : SectionViewModel
 {
     private CategoryOption _selectedCategory = CategoryOption.All[0];
@@ -26,8 +27,10 @@ public sealed class WaitingListsViewModel : SectionViewModel
         IssueCommand = new RelayCommand(Issue, () => Queue.Count > 0);
     }
 
+    /// <summary>The categories that have a queue.</summary>
     public IReadOnlyList<CategoryOption> Categories => CategoryOption.All;
 
+    /// <summary>The selected category.</summary>
     public CategoryOption SelectedCategory
     {
         get => _selectedCategory;
@@ -38,46 +41,55 @@ public sealed class WaitingListsViewModel : SectionViewModel
         }
     }
 
+    /// <summary>The borrowers who can join a queue.</summary>
     public IReadOnlyList<Borrower> Borrowers
     {
         get => _borrowers;
         private set => SetProperty(ref _borrowers, value);
     }
 
+    /// <summary>The selected borrower.</summary>
     public Borrower? SelectedBorrower
     {
         get => _selectedBorrower;
         set => SetProperty(ref _selectedBorrower, value);
     }
 
+    /// <summary>The queue for the selected category.</summary>
     public IReadOnlyList<QueueEntry> Queue
     {
         get => _queue;
         private set => SetProperty(ref _queue, value);
     }
 
+    /// <summary>The selected queue entry.</summary>
     public QueueEntry? SelectedEntry
     {
         get => _selectedEntry;
         set => SetProperty(ref _selectedEntry, value);
     }
 
+    /// <summary>A summary of every queue.</summary>
     public IReadOnlyList<QueueOverview> Overview
     {
         get => _overview;
         private set => SetProperty(ref _overview, value);
     }
 
+    /// <summary>Who is next in the selected queue.</summary>
     public string NextInLine
     {
         get => _nextInLine;
         private set => SetProperty(ref _nextInLine, value);
     }
 
+    /// <summary>Adds the selected borrower to the queue.</summary>
     public ICommand JoinCommand { get; }
 
+    /// <summary>Removes the selected entry from the queue.</summary>
     public ICommand CancelCommand { get; }
 
+    /// <summary>Issues an item to the next borrower.</summary>
     public ICommand IssueCommand { get; }
 
     /// <summary>Reloads the borrowers, the selected queue and the queue overview.</summary>

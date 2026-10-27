@@ -2,6 +2,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Holds a first-in, first-out queue per category.</summary>
 public interface IWaitingListRegistry
 {
     /// <summary>Adds a borrower to the end of a category queue.</summary>

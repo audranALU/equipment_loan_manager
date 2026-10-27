@@ -2,10 +2,13 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Holds the configured equipment items.</summary>
 public interface IInventory
 {
+    /// <summary>All items.</summary>
     IReadOnlyList<EquipmentItem> Items { get; }
 
+    /// <summary>The total number of items.</summary>
     int TotalItems { get; }
 
     /// <summary>Counts all items in a category.</summary>

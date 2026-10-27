@@ -5,6 +5,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>View model for the stock configuration window.</summary>
 public sealed class ConfigurationViewModel : ObservableObject
 {
     private string _summary = string.Empty;
@@ -16,16 +17,20 @@ public sealed class ConfigurationViewModel : ObservableObject
         StartCommand = new RelayCommand(Start);
     }
 
+    /// <summary>Raised with the quantities once all entries are valid.</summary>
     public event Action<IReadOnlyDictionary<EquipmentCategory, int>>? Completed;
 
+    /// <summary>The quantity entries, one per category.</summary>
     public IReadOnlyList<QuantityEntryViewModel> Entries { get; }
 
+    /// <summary>The validation summary message.</summary>
     public string Summary
     {
         get => _summary;
         private set => SetProperty(ref _summary, value);
     }
 
+    /// <summary>Validates the entries and starts the session.</summary>
     public ICommand StartCommand { get; }
 
     /// <summary>Validates all entries and starts the session if they are valid.</summary>

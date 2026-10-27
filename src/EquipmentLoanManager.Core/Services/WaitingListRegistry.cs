@@ -3,6 +3,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Holds a first-in, first-out queue per category.</summary>
 public sealed class WaitingListRegistry : IWaitingListRegistry
 {
     private readonly Dictionary<EquipmentCategory, Queue<Borrower>> _queues =

@@ -7,6 +7,7 @@ namespace EquipmentLoanManager.App.ViewModels;
 /// <summary>Base view model for a main window tab.</summary>
 public abstract class SectionViewModel(LoanManager manager, Action<OperationResult> report) : ObservableObject
 {
+    /// <summary>The loan manager for the session.</summary>
     protected LoanManager Manager { get; } = manager;
 
     /// <summary>Reloads the tab data.</summary>
