@@ -5,6 +5,7 @@ namespace EquipmentLoanManager.App.Infrastructure;
 /// <summary>A command that runs the given action.</summary>
 public sealed class RelayCommand(Action execute, Func<bool>? canExecute = null) : ICommand
 {
+    /// <summary>Raised when the command may need to be re-checked.</summary>
     public event EventHandler? CanExecuteChanged
     {
         add => CommandManager.RequerySuggested += value;

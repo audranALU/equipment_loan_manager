@@ -3,8 +3,10 @@ using EquipmentLoanManager.Core.Results;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Stores the borrowers added in this session.</summary>
 public interface IBorrowerRegistry
 {
+    /// <summary>All borrowers.</summary>
     IReadOnlyList<Borrower> All { get; }
 
     /// <summary>Adds a borrower, generating an ID if none is given.</summary>

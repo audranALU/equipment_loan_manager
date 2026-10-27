@@ -2,6 +2,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Configuration;
 
+/// <summary>The fixed list of categories and their limits.</summary>
 public static class EquipmentCatalog
 {
     private static readonly IReadOnlyDictionary<EquipmentCategory, CategoryInfo> Categories =
@@ -14,6 +15,7 @@ public static class EquipmentCatalog
             [EquipmentCategory.Tripod] = new("Tripod", "TRI", 12)
         };
 
+    /// <summary>All categories.</summary>
     public static IReadOnlyList<EquipmentCategory> All { get; } = Categories.Keys.ToList();
 
     /// <summary>Gets the settings for a category.</summary>

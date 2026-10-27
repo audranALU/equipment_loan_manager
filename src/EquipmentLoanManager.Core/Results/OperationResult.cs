@@ -1,5 +1,6 @@
 namespace EquipmentLoanManager.Core.Results;
 
+/// <summary>The outcome of an action, with a message for the user.</summary>
 public class OperationResult
 {
     /// <summary>Creates a result with a status and message.</summary>
@@ -9,8 +10,10 @@ public class OperationResult
         Message = message;
     }
 
+    /// <summary>Whether the action succeeded.</summary>
     public bool Succeeded { get; }
 
+    /// <summary>The message for the user.</summary>
     public string Message { get; }
 
     /// <summary>Creates a successful result.</summary>
@@ -20,6 +23,7 @@ public class OperationResult
     public static OperationResult Failure(string message) => new(false, message);
 }
 
+/// <summary>An outcome that also carries a value.</summary>
 public sealed class OperationResult<T> : OperationResult
 {
     /// <summary>Creates a result with a status, message and value.</summary>
@@ -29,6 +33,7 @@ public sealed class OperationResult<T> : OperationResult
         Value = value;
     }
 
+    /// <summary>The value, if the action succeeded.</summary>
     public T? Value { get; }
 
     /// <summary>Creates a successful result with a value.</summary>

@@ -1,5 +1,6 @@
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Generates numbered IDs such as BR-001.</summary>
 public sealed class SequentialIdGenerator : IIdGenerator
 {
     private readonly Dictionary<string, int> _counters = new(StringComparer.OrdinalIgnoreCase);

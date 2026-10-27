@@ -6,6 +6,7 @@ using EquipmentLoanManager.Core.Services;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>View model for the borrowers tab.</summary>
 public sealed class BorrowersViewModel : SectionViewModel
 {
     private string _newName = string.Empty;
@@ -21,32 +22,38 @@ public sealed class BorrowersViewModel : SectionViewModel
         RemoveCommand = new RelayCommand(Remove, () => SelectedRow is not null);
     }
 
+    /// <summary>The name entered for a new borrower.</summary>
     public string NewName
     {
         get => _newName;
         set => SetProperty(ref _newName, value);
     }
 
+    /// <summary>The optional ID entered for a new borrower.</summary>
     public string NewId
     {
         get => _newId;
         set => SetProperty(ref _newId, value);
     }
 
+    /// <summary>The borrowers shown in the table.</summary>
     public IReadOnlyList<BorrowerRow> Rows
     {
         get => _rows;
         private set => SetProperty(ref _rows, value);
     }
 
+    /// <summary>The selected borrower row.</summary>
     public BorrowerRow? SelectedRow
     {
         get => _selectedRow;
         set => SetProperty(ref _selectedRow, value);
     }
 
+    /// <summary>Adds a borrower.</summary>
     public ICommand AddCommand { get; }
 
+    /// <summary>Removes the selected borrower.</summary>
     public ICommand RemoveCommand { get; }
 
     /// <summary>Reloads the borrower list.</summary>

@@ -7,6 +7,7 @@ namespace EquipmentLoanManager.Core.Services;
 /// <summary>Applies the borrowing limits.</summary>
 public sealed class BorrowingPolicy(IBorrowerRegistry borrowers, ILoanLedger loans) : IBorrowingPolicy
 {
+    /// <summary>The most items one borrower can hold at once.</summary>
     public const int MaxActiveLoans = 2;
 
     /// <summary>Checks the borrower exists, has fewer than two loans and none in this category.</summary>

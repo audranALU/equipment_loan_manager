@@ -10,6 +10,7 @@ public sealed class BorrowerRegistry(IIdGenerator idGenerator) : IBorrowerRegist
 
     private readonly List<Borrower> _borrowers = [];
 
+    /// <summary>All borrowers.</summary>
     public IReadOnlyList<Borrower> All => _borrowers;
 
     /// <summary>Adds a borrower, generating an ID if none is given.</summary>

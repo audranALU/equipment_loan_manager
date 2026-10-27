@@ -4,6 +4,7 @@ using EquipmentLoanManager.Core.Results;
 
 namespace EquipmentLoanManager.Core.Configuration;
 
+/// <summary>Validates stock quantities entered by the user.</summary>
 public static class QuantityValidator
 {
     /// <summary>Checks that the entered quantity is a whole number within the category limit.</summary>

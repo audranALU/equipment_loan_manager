@@ -2,10 +2,13 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Keeps track of all loans.</summary>
 public interface ILoanLedger
 {
+    /// <summary>Loans that have not been returned.</summary>
     IReadOnlyList<Loan> Active { get; }
 
+    /// <summary>Loans that have been returned.</summary>
     IReadOnlyList<Loan> Completed { get; }
 
     /// <summary>Records a new loan.</summary>

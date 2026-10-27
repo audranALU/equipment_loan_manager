@@ -11,12 +11,14 @@ public sealed class InventoryViewModel(LoanManager manager, Action<OperationResu
     private IReadOnlyList<CategorySummary> _summaries = [];
     private IReadOnlyList<EquipmentItem> _items = [];
 
+    /// <summary>Stock totals per category.</summary>
     public IReadOnlyList<CategorySummary> Summaries
     {
         get => _summaries;
         private set => SetProperty(ref _summaries, value);
     }
 
+    /// <summary>All items and their status.</summary>
     public IReadOnlyList<EquipmentItem> Items
     {
         get => _items;

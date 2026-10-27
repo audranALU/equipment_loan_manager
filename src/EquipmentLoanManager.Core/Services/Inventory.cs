@@ -3,6 +3,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Holds the configured equipment items.</summary>
 public sealed class Inventory : IInventory
 {
     private readonly List<EquipmentItem> _items = [];
@@ -27,8 +28,10 @@ public sealed class Inventory : IInventory
         }
     }
 
+    /// <summary>All items.</summary>
     public IReadOnlyList<EquipmentItem> Items => _items;
 
+    /// <summary>The total number of items.</summary>
     public int TotalItems => _items.Count;
 
     /// <summary>Counts all items in a category.</summary>

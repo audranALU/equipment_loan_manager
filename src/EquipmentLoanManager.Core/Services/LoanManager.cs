@@ -4,6 +4,7 @@ using EquipmentLoanManager.Core.Results;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Runs all borrowing, returning and waiting list actions.</summary>
 public sealed class LoanManager
 {
     private const string LoanIdPrefix = "LN";
@@ -28,12 +29,16 @@ public sealed class LoanManager
         _idGenerator = idGenerator;
     }
 
+    /// <summary>The equipment inventory.</summary>
     public IInventory Inventory { get; }
 
+    /// <summary>The borrower registry.</summary>
     public IBorrowerRegistry Borrowers { get; }
 
+    /// <summary>The loan ledger.</summary>
     public ILoanLedger Loans { get; }
 
+    /// <summary>The waiting lists.</summary>
     public IWaitingListRegistry WaitingLists { get; }
 
     /// <summary>Creates a manager with the given stock.</summary>

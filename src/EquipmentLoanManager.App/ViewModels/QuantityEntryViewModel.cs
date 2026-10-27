@@ -10,12 +10,16 @@ public sealed class QuantityEntryViewModel(EquipmentCategory category) : Observa
     private string _input = "0";
     private string _error = string.Empty;
 
+    /// <summary>The category this entry is for.</summary>
     public EquipmentCategory Category { get; } = category;
 
+    /// <summary>The category display name.</summary>
     public string Label { get; } = EquipmentCatalog.Label(category);
 
+    /// <summary>The allowed range shown to the user.</summary>
     public string Hint { get; } = $"0 to {EquipmentCatalog.MaxCapacity(category)}";
 
+    /// <summary>The text the user entered.</summary>
     public string Input
     {
         get => _input;
@@ -26,6 +30,7 @@ public sealed class QuantityEntryViewModel(EquipmentCategory category) : Observa
         }
     }
 
+    /// <summary>The validation error, if any.</summary>
     public string Error
     {
         get => _error;

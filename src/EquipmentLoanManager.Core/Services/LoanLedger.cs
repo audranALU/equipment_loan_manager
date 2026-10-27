@@ -2,12 +2,15 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.Core.Services;
 
+/// <summary>Keeps track of all loans.</summary>
 public sealed class LoanLedger : ILoanLedger
 {
     private readonly List<Loan> _loans = [];
 
+    /// <summary>Loans that have not been returned.</summary>
     public IReadOnlyList<Loan> Active => _loans.Where(l => l.IsActive).ToList();
 
+    /// <summary>Loans that have been returned.</summary>
     public IReadOnlyList<Loan> Completed => _loans.Where(l => !l.IsActive).ToList();
 
     /// <summary>Records a new loan.</summary>
