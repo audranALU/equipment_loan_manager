@@ -4,6 +4,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>A quantity input for one category.</summary>
 public sealed class QuantityEntryViewModel(EquipmentCategory category) : ObservableObject
 {
     private string _input = "0";

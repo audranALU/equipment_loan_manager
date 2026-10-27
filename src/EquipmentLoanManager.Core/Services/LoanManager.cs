@@ -11,6 +11,7 @@ public sealed class LoanManager
     private readonly IIdGenerator _idGenerator;
     private readonly IBorrowingPolicy _policy;
 
+    /// <summary>Creates the manager from its services.</summary>
     public LoanManager(
         IInventory inventory,
         IBorrowerRegistry borrowers,
@@ -35,6 +36,7 @@ public sealed class LoanManager
 
     public IWaitingListRegistry WaitingLists { get; }
 
+    /// <summary>Creates a manager with the given stock.</summary>
     public static LoanManager Create(IReadOnlyDictionary<EquipmentCategory, int> quantities)
     {
         var idGenerator = new SequentialIdGenerator();
@@ -50,8 +52,10 @@ public sealed class LoanManager
             idGenerator);
     }
 
+    /// <summary>Adds a borrower.</summary>
     public OperationResult<Borrower> AddBorrower(string? name, string? id = null) => Borrowers.Add(name, id);
 
+    /// <summary>Removes a borrower with no active loans and cancels their waiting requests.</summary>
     public OperationResult RemoveBorrower(string? borrowerId)
     {
         var borrower = Borrowers.Find(borrowerId);
@@ -70,6 +74,7 @@ public sealed class LoanManager
         return OperationResult.Success($"Removed {borrower.DisplayName}.{suffix}");
     }
 
+    /// <summary>Lends an available item to an eligible borrower.</summary>
     public OperationResult<Loan> Borrow(string? borrowerId, EquipmentCategory category)
     {
         var label = EquipmentCatalog.Label(category);
@@ -93,6 +98,7 @@ public sealed class LoanManager
         return Issue(Borrowers.Find(borrowerId)!, item);
     }
 
+    /// <summary>Returns a loaned item.</summary>
     public OperationResult<Loan> Return(string? loanId)
     {
         var loan = Loans.Find(loanId);
@@ -113,6 +119,7 @@ public sealed class LoanManager
         return OperationResult<Loan>.Success(loan, message);
     }
 
+    /// <summary>Adds a borrower to a category's waiting list.</summary>
     public OperationResult JoinWaitingList(string? borrowerId, EquipmentCategory category)
     {
         var label = EquipmentCatalog.Label(category);
@@ -137,6 +144,7 @@ public sealed class LoanManager
         return OperationResult.Success($"{borrower.Name} joined the {label} waiting list at position {queue.Count + 1}.");
     }
 
+    /// <summary>Removes a borrower from a waiting list.</summary>
     public OperationResult CancelWaitingRequest(string? borrowerId, EquipmentCategory category)
     {
         var label = EquipmentCatalog.Label(category);
@@ -148,6 +156,7 @@ public sealed class LoanManager
         return OperationResult.Success($"Cancelled {borrower.Name}'s request for a {label}.");
     }
 
+    /// <summary>Lends a returned item to the next borrower in the queue.</summary>
     public OperationResult<Loan> IssueToNextWaiting(EquipmentCategory category)
     {
         var label = EquipmentCatalog.Label(category);
@@ -169,9 +178,11 @@ public sealed class LoanManager
         return result;
     }
 
+    /// <summary>Gets borrowers who currently hold an item.</summary>
     public IReadOnlyList<Borrower> ActiveBorrowers() =>
         Loans.Active.Select(l => l.Borrower).Distinct().ToList();
 
+    /// <summary>Creates a loan and assigns the item.</summary>
     private OperationResult<Loan> Issue(Borrower borrower, EquipmentItem item)
     {
         var loan = new Loan(_idGenerator.Next(LoanIdPrefix), borrower, item);
