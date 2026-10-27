@@ -2,6 +2,7 @@ namespace EquipmentLoanManager.Core.Models;
 
 public sealed class Loan
 {
+    /// <summary>Creates a loan of an item to a borrower.</summary>
     internal Loan(string id, Borrower borrower, EquipmentItem item)
     {
         Id = id;
@@ -19,6 +20,7 @@ public sealed class Loan
 
     public bool IsActive => Status == LoanStatus.Active;
 
+    /// <summary>Marks the loan as returned.</summary>
     internal void Complete()
     {
         if (!IsActive)

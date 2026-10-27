@@ -7,6 +7,7 @@ namespace EquipmentLoanManager.App;
 
 public partial class App : Application
 {
+    /// <summary>Shows the configuration window, then opens the main window.</summary>
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);

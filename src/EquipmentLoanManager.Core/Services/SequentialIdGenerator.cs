@@ -4,6 +4,7 @@ public sealed class SequentialIdGenerator : IIdGenerator
 {
     private readonly Dictionary<string, int> _counters = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Returns the next numbered ID for the given prefix.</summary>
     public string Next(string prefix)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(prefix);

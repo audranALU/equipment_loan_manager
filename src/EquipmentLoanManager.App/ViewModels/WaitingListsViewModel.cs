@@ -17,6 +17,7 @@ public sealed class WaitingListsViewModel : SectionViewModel
     private IReadOnlyList<QueueOverview> _overview = [];
     private string _nextInLine = string.Empty;
 
+    /// <summary>Creates the waiting lists tab and its commands.</summary>
     public WaitingListsViewModel(LoanManager manager, Action<OperationResult> report)
         : base(manager, report)
     {
@@ -79,6 +80,7 @@ public sealed class WaitingListsViewModel : SectionViewModel
 
     public ICommand IssueCommand { get; }
 
+    /// <summary>Reloads the borrowers, the selected queue and the queue overview.</summary>
     public override void Refresh()
     {
         var category = SelectedCategory.Value;
@@ -105,6 +107,7 @@ public sealed class WaitingListsViewModel : SectionViewModel
         NextInLine = DescribeNext(category);
     }
 
+    /// <summary>Describes who is next in a category queue.</summary>
     private string DescribeNext(EquipmentCategory category)
     {
         var next = Manager.WaitingLists.Peek(category);
@@ -117,9 +120,12 @@ public sealed class WaitingListsViewModel : SectionViewModel
             : $"Next: {next.DisplayName}. Waiting for a return.";
     }
 
+    /// <summary>Adds the selected borrower to the selected queue.</summary>
     private void Join() => Report(Manager.JoinWaitingList(SelectedBorrower?.Id, SelectedCategory.Value));
 
+    /// <summary>Removes the selected entry from the queue.</summary>
     private void Cancel() => Report(Manager.CancelWaitingRequest(SelectedEntry?.Borrower.Id, SelectedCategory.Value));
 
+    /// <summary>Issues an item to the next borrower in the queue.</summary>
     private void Issue() => Report(Manager.IssueToNextWaiting(SelectedCategory.Value));
 }

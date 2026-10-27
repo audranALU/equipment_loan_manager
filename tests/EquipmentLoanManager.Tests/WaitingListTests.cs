@@ -9,12 +9,14 @@ public class WaitingListTests
     private readonly Borrower _holder;
     private readonly Loan _holderLoan;
 
+    /// <summary>Creates a session where the only laptop is on loan.</summary>
     public WaitingListTests()
     {
         _holder = _manager.Register("Amara");
         _holderLoan = _manager.Borrow(_holder.Id, EquipmentCategory.Laptop).Value!;
     }
 
+    /// <summary>Checks a borrower can join when all items are on loan.</summary>
     [Fact]
     public void Join_AddsBorrowerWhenCategoryIsFullyBorrowed()
     {
@@ -26,6 +28,7 @@ public class WaitingListTests
         Assert.Equal([waiter], _manager.WaitingLists.GetQueue(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks joining is refused while items are available.</summary>
     [Fact]
     public void Join_RejectsWhenItemsAreStillAvailable()
     {
@@ -37,6 +40,7 @@ public class WaitingListTests
         Assert.False(result.Succeeded);
     }
 
+    /// <summary>Checks a borrower cannot join the same queue twice.</summary>
     [Fact]
     public void Join_RejectsDuplicateEntry()
     {
@@ -49,6 +53,7 @@ public class WaitingListTests
         Assert.Single(_manager.WaitingLists.GetQueue(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks joining is refused for a category with no stock.</summary>
     [Fact]
     public void Join_RejectsCategoryWithZeroStock()
     {
@@ -59,6 +64,7 @@ public class WaitingListTests
         Assert.False(result.Succeeded);
     }
 
+    /// <summary>Checks an ineligible borrower cannot join.</summary>
     [Fact]
     public void Join_RejectsIneligibleBorrower()
     {
@@ -68,6 +74,7 @@ public class WaitingListTests
         Assert.Empty(_manager.WaitingLists.GetQueue(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks cancelling keeps the rest of the queue in order.</summary>
     [Fact]
     public void Cancel_RemovesRequestAndKeepsOthersInOrder()
     {
@@ -84,6 +91,7 @@ public class WaitingListTests
         Assert.Equal([first, third], _manager.WaitingLists.GetQueue(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks cancelling fails for someone not in the queue.</summary>
     [Fact]
     public void Cancel_RejectsBorrowerWhoIsNotWaiting()
     {
@@ -94,6 +102,7 @@ public class WaitingListTests
         Assert.False(result.Succeeded);
     }
 
+    /// <summary>Checks a return names the next waiting borrower.</summary>
     [Fact]
     public void Return_AnnouncesNextWaitingBorrower()
     {
@@ -106,6 +115,7 @@ public class WaitingListTests
         Assert.Same(waiter, _manager.WaitingLists.Peek(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks borrowing cannot skip the queue.</summary>
     [Fact]
     public void Borrow_CannotBypassExistingQueue()
     {
@@ -120,6 +130,7 @@ public class WaitingListTests
         Assert.Equal(1, _manager.Inventory.AvailableCount(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks items are issued first in, first out.</summary>
     [Fact]
     public void IssueToNext_ServesQueueInFirstInFirstOutOrder()
     {
@@ -136,6 +147,7 @@ public class WaitingListTests
         Assert.Equal([second], _manager.WaitingLists.GetQueue(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks issuing fails when no item is available.</summary>
     [Fact]
     public void IssueToNext_RejectsWhenNoItemHasBeenReturned()
     {
@@ -148,6 +160,7 @@ public class WaitingListTests
         Assert.Single(_manager.WaitingLists.GetQueue(EquipmentCategory.Laptop));
     }
 
+    /// <summary>Checks eligibility is checked again before issuing.</summary>
     [Fact]
     public void IssueToNext_RechecksEligibilityBeforeIssuing()
     {

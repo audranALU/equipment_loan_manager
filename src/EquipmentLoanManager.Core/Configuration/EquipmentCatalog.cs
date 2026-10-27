@@ -16,9 +16,12 @@ public static class EquipmentCatalog
 
     public static IReadOnlyList<EquipmentCategory> All { get; } = Categories.Keys.ToList();
 
+    /// <summary>Gets the settings for a category.</summary>
     public static CategoryInfo Get(EquipmentCategory category) => Categories[category];
 
+    /// <summary>Gets the display name of a category.</summary>
     public static string Label(EquipmentCategory category) => Get(category).Label;
 
+    /// <summary>Gets the maximum stock allowed for a category.</summary>
     public static int MaxCapacity(EquipmentCategory category) => Get(category).MaxCapacity;
 }

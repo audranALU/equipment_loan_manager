@@ -4,6 +4,7 @@ using EquipmentLoanManager.Core.Models;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>A quantity input for one category.</summary>
 public sealed class QuantityEntryViewModel(EquipmentCategory category) : ObservableObject
 {
     private string _input = "0";
@@ -31,6 +32,7 @@ public sealed class QuantityEntryViewModel(EquipmentCategory category) : Observa
         private set => SetProperty(ref _error, value);
     }
 
+    /// <summary>Validates the input and shows an error if it is invalid.</summary>
     public bool TryGetQuantity(out int quantity)
     {
         var result = QuantityValidator.Validate(Category, Input);

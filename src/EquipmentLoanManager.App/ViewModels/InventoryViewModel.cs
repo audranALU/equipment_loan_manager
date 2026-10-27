@@ -4,6 +4,7 @@ using EquipmentLoanManager.Core.Services;
 
 namespace EquipmentLoanManager.App.ViewModels;
 
+/// <summary>View model for the inventory tab.</summary>
 public sealed class InventoryViewModel(LoanManager manager, Action<OperationResult> report)
     : SectionViewModel(manager, report)
 {
@@ -22,6 +23,7 @@ public sealed class InventoryViewModel(LoanManager manager, Action<OperationResu
         private set => SetProperty(ref _items, value);
     }
 
+    /// <summary>Reloads the stock totals and item list.</summary>
     public override void Refresh()
     {
         Summaries = Manager.Inventory.Summarise();
