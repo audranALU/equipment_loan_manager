@@ -1,0 +1,64 @@
+<Window x:Class="EquipmentLoanManager.App.Views.ConfigurationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Equipment Loan Manager - Setup"
+        Width="560" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Style="{StaticResource WindowStyle}">
+    <StackPanel Margin="32">
+        <TextBlock Text="Configure equipment" Style="{StaticResource Title}" />
+        <TextBlock Margin="0,6,0,24" Style="{StaticResource Muted}"
+                   Text="Enter how many items of each category are in stock for this session. Each value must be a whole number within the category limit." />
+
+        <Border Style="{StaticResource Card}">
+            <ItemsControl ItemsSource="{Binding Entries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="140" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding Hint, StringFormat=Allowed: {0}}" FontSize="12"
+                                           Foreground="{StaticResource MutedTextBrush}" />
+                            </StackPanel>
+
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}"
+                                     HorizontalContentAlignment="Center" />
+
+                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Margin="0,4,0,0"
+                                       Text="{Binding Error}" FontSize="12"
+                                       Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <Grid Margin="0,20,0,0">
+            <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                       Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" Margin="0,0,160,0" />
+            <Button Content="Start session" HorizontalAlignment="Right" IsDefault="True"
+                    Command="{Binding StartCommand}" Style="{StaticResource PrimaryButton}" />
+        </Grid>
+    </StackPanel>
+</Window>

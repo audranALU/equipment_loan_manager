@@ -1,0 +1,51 @@
+using System.Windows.Input;
+using EquipmentLoanManager.App.Infrastructure;
+using EquipmentLoanManager.Core.Configuration;
+using EquipmentLoanManager.Core.Models;
+
+namespace EquipmentLoanManager.App.ViewModels;
+
+public sealed class ConfigurationViewModel : ObservableObject
+{
+    private string _summary = string.Empty;
+
+    public ConfigurationViewModel()
+    {
+        Entries = EquipmentCatalog.All.Select(c => new QuantityEntryViewModel(c)).ToList();
+        StartCommand = new RelayCommand(Start);
+    }
+
+    public event Action<IReadOnlyDictionary<EquipmentCategory, int>>? Completed;
+
+    public IReadOnlyList<QuantityEntryViewModel> Entries { get; }
+
+    public string Summary
+    {
+        get => _summary;
+        private set => SetProperty(ref _summary, value);
+    }
+
+    public ICommand StartCommand { get; }
+
+    private void Start()
+    {
+        var quantities = new Dictionary<EquipmentCategory, int>();
+        var invalid = 0;
+
+        foreach (var entry in Entries)
+        {
+            if (entry.TryGetQuantity(out var quantity))
+                quantities[entry.Category] = quantity;
+            else
+                invalid++;
+        }
+
+        if (invalid > 0)
+        {
+            Summary = $"Fix {invalid} invalid entr{(invalid == 1 ? "y" : "ies")} and try again.";
+            return;
+        }
+
+        Completed?.Invoke(quantities);
+    }
+}

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EquipmentLoanManager.App/EquipmentLoanManager.App.csproj" />
+    <Project Path="src/EquipmentLoanManager.Core/EquipmentLoanManager.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EquipmentLoanManager.Tests/EquipmentLoanManager.Tests.csproj" />
+  </Folder>
+</Solution>
